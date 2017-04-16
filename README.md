@@ -73,7 +73,7 @@ Configuration file format
 listen = "localhost:1081"    # default is "localhost:1081"
 
 proxy_url = "socks5://10.20.30.40:1080"  # for SOCKS5 server
-#proxy_url = "http://10.20.30.40:3128"   # for HTTP proxy server
+# proxy_url = "http://10.20.30.40:3128"   # for HTTP proxy server
 
 [log]
 filename = "/path/to/file"   # default to stderr
