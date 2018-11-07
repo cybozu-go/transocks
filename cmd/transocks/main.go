@@ -7,15 +7,15 @@ import (
 	"net/url"
 
 	"github.com/BurntSushi/toml"
-	"github.com/cybozu-go/cmd"
 	"github.com/cybozu-go/log"
 	"github.com/cybozu-go/transocks"
+	"github.com/cybozu-go/well"
 )
 
 type tomlConfig struct {
-	Listen   string        `toml:"listen"`
-	ProxyURL string        `toml:"proxy_url"`
-	Log      cmd.LogConfig `toml:"log"`
+	Listen   string         `toml:"listen"`
+	ProxyURL string         `toml:"proxy_url"`
+	Log      well.LogConfig `toml:"log"`
 }
 
 const (
@@ -65,8 +65,8 @@ func serve(lns []net.Listener, c *transocks.Config) {
 	for _, ln := range lns {
 		s.Serve(ln)
 	}
-	err = cmd.Wait()
-	if err != nil && !cmd.IsSignaled(err) {
+	err = well.Wait()
+	if err != nil && !well.IsSignaled(err) {
 		log.ErrorExit(err)
 	}
 }
@@ -79,7 +79,7 @@ func main() {
 		log.ErrorExit(err)
 	}
 
-	g := &cmd.Graceful{
+	g := &well.Graceful{
 		Listen: func() ([]net.Listener, error) {
 			return transocks.Listeners(c)
 		},
@@ -89,8 +89,8 @@ func main() {
 	}
 	g.Run()
 
-	err = cmd.Wait()
-	if err != nil && !cmd.IsSignaled(err) {
+	err = well.Wait()
+	if err != nil && !well.IsSignaled(err) {
 		log.ErrorExit(err)
 	}
 }

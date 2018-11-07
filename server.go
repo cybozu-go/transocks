@@ -7,9 +7,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/cybozu-go/cmd"
 	"github.com/cybozu-go/log"
 	"github.com/cybozu-go/netutil"
+	"github.com/cybozu-go/well"
 	"golang.org/x/net/proxy"
 )
 
@@ -29,7 +29,7 @@ func Listeners(c *Config) ([]net.Listener, error) {
 
 // Server provides transparent proxy server functions.
 type Server struct {
-	cmd.Server
+	well.Server
 	mode   Mode
 	logger *log.Logger
 	dialer proxy.Dialer
@@ -60,7 +60,7 @@ func NewServer(c *Config) (*Server, error) {
 	}
 
 	s := &Server{
-		Server: cmd.Server{
+		Server: well.Server{
 			ShutdownTimeout: c.ShutdownTimeout,
 			Env:             c.Env,
 		},
@@ -86,7 +86,7 @@ func (s *Server) handleConnection(ctx context.Context, conn net.Conn) {
 		return
 	}
 
-	fields := cmd.FieldsFromContext(ctx)
+	fields := well.FieldsFromContext(ctx)
 	fields[log.FnType] = "access"
 	fields["client_addr"] = conn.RemoteAddr().String()
 
@@ -117,7 +117,7 @@ func (s *Server) handleConnection(ctx context.Context, conn net.Conn) {
 
 	// do proxy
 	st := time.Now()
-	env := cmd.NewEnvironment(ctx)
+	env := well.NewEnvironment(ctx)
 	env.Go(func(ctx context.Context) error {
 		buf := s.pool.Get().([]byte)
 		_, err := io.CopyBuffer(destConn, tc, buf)
@@ -141,7 +141,7 @@ func (s *Server) handleConnection(ctx context.Context, conn net.Conn) {
 	env.Stop()
 	err = env.Wait()
 
-	fields = cmd.FieldsFromContext(ctx)
+	fields = well.FieldsFromContext(ctx)
 	fields["elapsed"] = time.Since(st).Seconds()
 	if err != nil {
 		fields[log.FnError] = err.Error()

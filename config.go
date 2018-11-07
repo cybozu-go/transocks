@@ -7,8 +7,8 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/cybozu-go/cmd"
 	"github.com/cybozu-go/log"
+	"github.com/cybozu-go/well"
 )
 
 const (
@@ -58,9 +58,9 @@ type Config struct {
 	// If nil, the default logger is used.
 	Logger *log.Logger
 
-	// Env can be used to specify a cmd.Environment on which the server runs.
+	// Env can be used to specify a well.Environment on which the server runs.
 	// If nil, the server will run on the global environment.
-	Env *cmd.Environment
+	Env *well.Environment
 }
 
 // NewConfig creates and initializes a new Config.
