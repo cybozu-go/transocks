@@ -110,6 +110,8 @@ COMMIT
 
 Use *ip6tables* to redirect IPv6 connections.
 
+**NOTE:** If you are going to use transocks on Linux gateway to redirect transit traffic, you have to bind transocks on primary address of internal network interface because iptables REDIRECT action in PREROUTING chain changes packet destination IP to primary address of incoming interface.
+
 Library usage
 -------------
 
