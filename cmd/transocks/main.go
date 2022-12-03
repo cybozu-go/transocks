@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"net/url"
+	"os"
 
 	"github.com/BurntSushi/toml"
 	"github.com/cybozu-go/log"
@@ -23,8 +24,10 @@ const (
 )
 
 var (
+	VERSION    = "Unknown"
 	configFile = flag.String("f", "/etc/transocks.toml",
 		"TOML configuration file path")
+	showVersion = flag.Bool("v", false, "show version and exit")
 )
 
 func loadConfig() (*transocks.Config, error) {
@@ -73,6 +76,11 @@ func serve(lns []net.Listener, c *transocks.Config) {
 
 func main() {
 	flag.Parse()
+
+	if *showVersion {
+		fmt.Println(VERSION)
+		os.Exit(0)
+	}
 
 	c, err := loadConfig()
 	if err != nil {

@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.1.2] - 2020-03-10
+
+### Added
+- Add goreleaser support
+- Add version flag for transocks cmd
+
 ## [1.1.1] - 2019-03-16
 
 ### Changed

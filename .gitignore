@@ -31,3 +31,5 @@ _testmain.go
 
 # Ignore go.sum
 /go.sum
+.idea/
+dist/
