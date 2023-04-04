@@ -126,8 +126,7 @@ func (s *Server) handleConnection(ctx context.Context, conn net.Conn) {
 		hello, reader_n2, err := peekClientHello(reader)
 		if err != nil {
 			fields[log.FnError] = err.Error()
-			s.logger.Error("peekClientHello failed", fields)
-			return
+			s.logger.Warn("peekClientHello failed", fields)
 		}
 		if err == nil && hello.ServerName != "" {
 			addr = hello.ServerName + addr[strings.Index(addr, ":"):]
@@ -138,11 +137,11 @@ func (s *Server) handleConnection(ctx context.Context, conn net.Conn) {
 		host, reader_n3, err := peekHTTP(reader)
 		if err != nil {
 			fields[log.FnError] = err.Error()
-			s.logger.Error("peekHTTP failed", fields)
-			return
-		}
-		if err == nil && host != "" {
-			addr = host + addr[strings.Index(addr, ":"):]
+			s.logger.Warn("peekHTTP failed", fields)
+		} else {
+			if err == nil && host != "" {
+				addr = host + addr[strings.Index(addr, ":"):]
+			}
 		}
 		reader = reader_n3
 	}
@@ -242,7 +241,7 @@ func peekSSL(reader io.Reader) (bool, io.Reader, error) {
 	peekedBytes := new(bytes.Buffer)
 	isTLS, err := isTLS(io.TeeReader(reader, peekedBytes))
 	if err != nil {
-		return false, nil, err
+		return false, io.MultiReader(peekedBytes, reader), err
 	}
 	return isTLS, io.MultiReader(peekedBytes, reader), nil
 }
@@ -261,7 +260,7 @@ func peekHTTP(reader io.Reader) (string, io.Reader, error) {
 	peekedBytes := new(bytes.Buffer)
 	host, err := getHost(io.TeeReader(reader, peekedBytes))
 	if err != nil {
-		return "", nil, err
+		return "", io.MultiReader(peekedBytes, reader), err
 	}
 	return host, io.MultiReader(peekedBytes, reader), nil
 }
